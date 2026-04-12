@@ -1,8 +1,16 @@
 .main {
   width: 100%;
+  max-width: 100%;
   margin: 0 auto;
   padding: 1rem 1.25rem 2rem;
   box-sizing: border-box;
+  overflow-x: clip;
+}
+
+@media (max-width: 959px) {
+  .main {
+    padding: 0.75rem 0.85rem 1.5rem;
+  }
 }
 
 @media (min-width: 960px) {
@@ -51,6 +59,8 @@
 .studioShell {
   flex: 1;
   min-height: 0;
+  min-width: 0;
+  width: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -58,9 +68,20 @@
 .studioLayout {
   flex: 1;
   min-height: 0;
+  min-width: 0;
+  width: 100%;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
   align-items: stretch;
+}
+
+.studioLeft,
+.studioRight {
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 @media (min-width: 960px) {

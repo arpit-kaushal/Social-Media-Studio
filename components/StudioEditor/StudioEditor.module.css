@@ -304,3 +304,43 @@
   opacity: 0.45;
   cursor: not-allowed;
 }
+
+@media (max-width: 959px) {
+  .panel {
+    max-width: 100%;
+    min-width: 0;
+    padding: 1rem 0.85rem;
+    border-radius: 16px;
+  }
+
+  .toolbar {
+    min-width: 0;
+    gap: 0.65rem;
+  }
+
+  .heading {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .slideTools {
+    flex-direction: column;
+  }
+
+  .toolBtn,
+  .toolBtnDanger {
+    flex: none;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .secondary {
+    flex: none;
+    width: 100%;
+    min-width: 0;
+  }
+}

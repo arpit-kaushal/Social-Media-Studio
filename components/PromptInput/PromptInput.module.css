@@ -92,6 +92,38 @@
   transform: none;
 }
 
+@keyframes promptSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.generateBusy {
+  position: relative;
+  padding-left: 2.4rem;
+}
+
+.generateBusy::before {
+  content: "";
+  position: absolute;
+  left: 0.9rem;
+  top: 50%;
+  width: 0.95rem;
+  height: 0.95rem;
+  margin-top: -0.475rem;
+  border: 2px solid rgb(255 255 255 / 32%);
+  border-top-color: rgb(255 255 255 / 95%);
+  border-radius: 50%;
+  animation: promptSpin 0.7s linear infinite;
+}
+
+.generate.generateBusy:disabled {
+  opacity: 1;
+  cursor: wait;
+  filter: none;
+  transform: none;
+}
+
 @media (max-width: 540px) {
   .row {
     flex-direction: column;

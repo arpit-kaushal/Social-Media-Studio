@@ -1,6 +1,8 @@
 "use client";
 
 import { useRef } from "react";
+import { getSlideBranding } from "@/lib/slideBranding";
+import { slideTextFingerprint } from "@/lib/slideTextFingerprint";
 import type { Branding, Slide, StudioFormat } from "@/lib/types";
 import { BrandingPanel } from "../BrandingPanel/BrandingPanel";
 import { ExportBar } from "../ExportBar/ExportBar";
@@ -13,22 +15,19 @@ type Props = {
   selectedIndex: number;
   onSelectSlide: (index: number) => void;
   format: StudioFormat;
-  branding: Branding;
-  onBrandingChange: (b: Branding) => void;
+  onBrandingChange: (id: string, b: Branding) => void;
   onTitleChange: (id: string, title: string) => void;
   onBodyChange: (id: string, body: string) => void;
-  onRegenerateSlide: (id: string) => void;
-  onChangeImage: (id: string) => void;
+  onRefreshStockImages: (id: string) => void;
+  onGenerateAiImage: (id: string) => void;
   onUploadImage: (id: string, file: File) => void;
   onAddSlide: () => void | Promise<void>;
   onDeleteSlide: (id: string) => void;
-  onRegenerateCarousel: () => void;
   onStartOver: () => void;
   onExportAll: () => void;
-  dirty: boolean;
   busy: boolean;
-  regeneratingId: string | null;
   imageBusyId: string | null;
+  imageBusyMode: "stock" | "ai" | null;
   exporting: boolean;
 };
 
@@ -37,22 +36,19 @@ export function StudioEditor({
   selectedIndex,
   onSelectSlide,
   format,
-  branding,
   onBrandingChange,
   onTitleChange,
   onBodyChange,
-  onRegenerateSlide,
-  onChangeImage,
+  onRefreshStockImages,
+  onGenerateAiImage,
   onUploadImage,
   onAddSlide,
   onDeleteSlide,
-  onRegenerateCarousel,
   onStartOver,
   onExportAll,
-  dirty,
   busy,
-  regeneratingId,
   imageBusyId,
+  imageBusyMode,
   exporting,
 }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
@@ -61,6 +57,14 @@ export function StudioEditor({
 
   const canAdd = slides.length < MAX_SLIDES;
   const canDelete = slides.length > 1;
+  const imageBusy = imageBusyId === slide.id;
+
+  const copyFingerprint = slideTextFingerprint(slide.title, slide.body);
+  const imageCopyMismatch =
+    slide.imageSource !== "upload" &&
+    typeof slide.imageSyncedText === "string" &&
+    slide.imageSyncedText.length > 0 &&
+    slide.imageSyncedText !== copyFingerprint;
 
   return (
     <div className={styles.panel}>
@@ -85,23 +89,9 @@ export function StudioEditor({
           onClick={onStartOver}
           disabled={busy}
         >
-          New idea
+          Start over
         </button>
       </div>
-
-      {dirty && (
-        <div className={styles.dirtyBanner}>
-          <p className={styles.dirtyText}>You changed copy or brand colors.</p>
-          <button
-            type="button"
-            className={styles.dirtyBtn}
-            onClick={onRegenerateCarousel}
-            disabled={busy}
-          >
-            Regenerate carousel
-          </button>
-        </div>
-      )}
 
       <div className={styles.chips} role="tablist" aria-label="Slides">
         {slides.map((s, i) => (
@@ -162,25 +152,44 @@ export function StudioEditor({
       />
 
       <div className={styles.brandBlock}>
-        <BrandingPanel branding={branding} onChange={onBrandingChange} disabled={busy} />
+        <BrandingPanel
+          branding={getSlideBranding(slide)}
+          onChange={(b) => onBrandingChange(slide.id, b)}
+          disabled={busy}
+        />
       </div>
 
+      {imageCopyMismatch && (
+        <div className={styles.copyImageHint} role="status">
+          <p className={styles.copyImageHintTitle}>Copy changed since this image was chosen</p>
+          <p className={styles.copyImageHintBody}>
+            Refresh stock, generate a new AI image, or upload a photo so the visual matches your
+            updated title and body.
+          </p>
+        </div>
+      )}
+
+      <p className={styles.imageSectionLabel}>Background image</p>
+      <p className={styles.imageSectionHint}>
+        We match visuals to your <span className={styles.emph}>current</span> title and body. If
+        you edit the copy, refresh or swap the image so it still fits.
+      </p>
       <div className={styles.actions}>
         <button
           type="button"
           className={styles.secondary}
-          onClick={() => onRegenerateSlide(slide.id)}
+          onClick={() => onRefreshStockImages(slide.id)}
           disabled={busy}
         >
-          {regeneratingId === slide.id ? "Regenerating…" : "Regenerate this slide"}
+          {imageBusy && imageBusyMode === "stock" ? "Refreshing stock…" : "Use stock photos"}
         </button>
         <button
           type="button"
           className={styles.secondary}
-          onClick={() => onChangeImage(slide.id)}
+          onClick={() => onGenerateAiImage(slide.id)}
           disabled={busy}
         >
-          {imageBusyId === slide.id ? "New image…" : "Change image"}
+          {imageBusy && imageBusyMode === "ai" ? "Generating AI image…" : "Generate AI image"}
         </button>
         <button
           type="button"

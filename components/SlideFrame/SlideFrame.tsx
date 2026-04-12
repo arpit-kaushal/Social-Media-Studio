@@ -2,17 +2,21 @@
 
 import type { CSSProperties } from "react";
 import { forwardRef } from "react";
-import { scrimGradient } from "@/lib/colorCss";
+import { scrimGradient, scrimGradientStory } from "@/lib/colorCss";
 import type { Branding, Slide, StudioFormat } from "@/lib/types";
 import { SlideBgImage } from "./SlideBgImage";
 import styles from "./SlideFrame.module.css";
+
+export type SlideFrameLayout = "export" | "phonePreview";
 
 type Props = {
   slide: Slide;
   branding: Branding;
   format: StudioFormat;
-  /** Logical width in CSS pixels (height follows format aspect). */
   widthPx: number;
+  layout?: SlideFrameLayout;
+  /** Only for the on-screen preview — exported PNGs use the usual story proportions. */
+  phonePreviewStoryHeightPx?: number;
 };
 
 function heightForFormat(widthPx: number, format: StudioFormat): number {
@@ -23,10 +27,18 @@ function heightForFormat(widthPx: number, format: StudioFormat): number {
 }
 
 export const SlideFrame = forwardRef<HTMLDivElement, Props>(function SlideFrame(
-  { slide, branding, format, widthPx },
+  { slide, branding, format, widthPx, layout = "export", phonePreviewStoryHeightPx },
   ref
 ) {
-  const h = heightForFormat(widthPx, format);
+  const isPhone = layout === "phonePreview";
+
+  const h =
+    isPhone &&
+    format === "story" &&
+    typeof phonePreviewStoryHeightPx === "number" &&
+    phonePreviewStoryHeightPx > 0
+      ? Math.round(phonePreviewStoryHeightPx)
+      : heightForFormat(widthPx, format);
   const baseFont = Math.max(12, Math.round(widthPx * 0.038));
 
   const posClass =
@@ -36,15 +48,39 @@ export const SlideFrame = forwardRef<HTMLDivElement, Props>(function SlideFrame(
         ? styles.contentCenter
         : styles.contentBottom;
 
+  const carouselBottomNudge =
+    isPhone && format === "carousel" && branding.textPosition === "bottom"
+      ? styles.contentBottomCarousel
+      : "";
+
+  const frameClass = styles.frame;
+
+  const contentClass = [
+    styles.content,
+    posClass,
+    carouselBottomNudge,
+    isPhone ? styles.contentPhonePreview : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const bodyClass = [styles.body, isPhone ? styles.bodyPhonePreview : ""]
+    .filter(Boolean)
+    .join(" ");
+
+  const sizeStyle: CSSProperties = {
+    width: widthPx,
+    height: h,
+    fontSize: baseFont,
+  };
+
   return (
     <div
       ref={ref}
-      className={styles.frame}
+      className={frameClass}
       style={
         {
-          width: widthPx,
-          height: h,
-          fontSize: baseFont,
+          ...sizeStyle,
           "--slide-primary": branding.primaryColor,
           "--slide-secondary": branding.secondaryColor,
           "--slide-title-color": branding.titleColor,
@@ -56,15 +92,25 @@ export const SlideFrame = forwardRef<HTMLDivElement, Props>(function SlideFrame(
       }
     >
       <div className={styles.imageLayer}>
-        <SlideBgImage slide={slide} />
-        <div
-          className={styles.scrim}
-          style={{ background: scrimGradient(branding.primaryColor, branding.secondaryColor) }}
-        />
+        <SlideBgImage slide={slide} objectFit={format === "story" ? "contain" : "cover"} />
+        {format === "story" ? (
+          <div
+            className={styles.scrimStoryTint}
+            style={{
+              background: scrimGradientStory(branding.primaryColor, branding.secondaryColor),
+            }}
+            aria-hidden
+          />
+        ) : (
+          <div
+            className={styles.scrim}
+            style={{ background: scrimGradient(branding.primaryColor, branding.secondaryColor) }}
+          />
+        )}
       </div>
-      <div className={`${styles.content} ${posClass}`}>
+      <div className={contentClass}>
         <p className={styles.title}>{slide.title}</p>
-        <p className={styles.body}>{slide.body}</p>
+        <p className={bodyClass}>{slide.body}</p>
       </div>
     </div>
   );

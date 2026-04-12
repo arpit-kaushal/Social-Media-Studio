@@ -1,19 +1,8 @@
 export type StudioFormat = "post" | "story" | "carousel";
 
-export type SlideImageSource = "generated" | "upload";
+export type SlideImageSource = "generated" | "upload" | "stock" | "ai_hf";
 
 export type TextPosition = "top" | "center" | "bottom";
-
-export type Slide = {
-  id: string;
-  title: string;
-  body: string;
-  /** Primary image URL or data URL for uploads */
-  image: string;
-  imageSource?: SlideImageSource;
-  /** Remote URLs to try in order when image fails (not used for uploads) */
-  imageCandidates?: string[];
-};
 
 export type Branding = {
   primaryColor: string;
@@ -21,11 +10,20 @@ export type Branding = {
   fontFamily: string;
   titleColor: string;
   bodyColor: string;
-  /** 70–200, scales title vs base */
   titleSizePercent: number;
-  /** 70–200, scales body vs base */
   bodySizePercent: number;
   textPosition: TextPosition;
+};
+
+export type Slide = {
+  id: string;
+  title: string;
+  body: string;
+  image: string;
+  imageSource?: SlideImageSource;
+  imageCandidates?: string[];
+  imageSyncedText?: string;
+  branding?: Branding;
 };
 
 export const DEFAULT_BRANDING: Branding = {

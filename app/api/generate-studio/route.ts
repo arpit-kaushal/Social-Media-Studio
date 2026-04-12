@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { generateSlideCopyOrHeuristic } from "@/lib/aiGenerateCopy";
 import { MAX_TOPIC_PROMPT_CHARS } from "@/lib/apiLimits";
-import { buildFullImageCandidates } from "@/lib/buildImageCandidates";
 import { randomSeed } from "@/lib/imageProviders";
-import type { StudioFormat } from "@/lib/types";
+import { resolveSlideImageCandidates } from "@/lib/resolveSlideImages";
+import { slideTextFingerprint } from "@/lib/slideTextFingerprint";
+import type { SlideImageSource, StudioFormat } from "@/lib/types";
 
 export const runtime = "nodejs";
+// Image generation can take a while; the host may still enforce its own cap.
+export const maxDuration = 300;
 
 export async function POST(req: Request) {
   try {
@@ -19,23 +22,42 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "prompt too long" }, { status: 400 });
     }
 
-    const copy = await generateSlideCopyOrHeuristic(prompt, format);
+    const { slides: copy, copySource } = await generateSlideCopyOrHeuristic(prompt, format);
 
-    const slides = await Promise.all(
-      copy.map(async (item) => {
-        const seed = randomSeed();
-        const visual = `${prompt.slice(0, 80)} ${item.title}`;
-        const candidates = await buildFullImageCandidates(visual, format, seed, prompt);
-        return {
-          title: item.title,
-          body: item.body,
-          image: candidates[0]!,
-          imageCandidates: candidates,
-        };
-      })
-    );
+    const slides: {
+      title: string;
+      body: string;
+      image: string;
+      imageCandidates: string[];
+      imageSource: SlideImageSource;
+      imageSyncedText: string;
+    }[] = [];
 
-    return NextResponse.json({ slides });
+    for (let i = 0; i < copy.length; i++) {
+      const item = copy[i]!;
+      const baseSeed = randomSeed();
+      const { candidates, imageSource } = await resolveSlideImageCandidates({
+        format,
+        topicPrompt: prompt,
+        title: item.title,
+        body: item.body,
+        slideIndex: i,
+        baseSeed,
+        tryHuggingFace: true,
+        hfBudgetMs: 120_000,
+      });
+      const primary = candidates[0] ?? "";
+      slides.push({
+        title: item.title,
+        body: item.body,
+        image: primary,
+        imageCandidates: candidates,
+        imageSource,
+        imageSyncedText: slideTextFingerprint(item.title, item.body),
+      });
+    }
+
+    return NextResponse.json({ slides, copySource });
   } catch (e) {
     console.error(e);
     return NextResponse.json({ error: "generation failed" }, { status: 500 });

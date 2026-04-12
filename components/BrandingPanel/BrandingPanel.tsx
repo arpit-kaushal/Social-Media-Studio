@@ -6,6 +6,9 @@ import styles from "./BrandingPanel.module.css";
 const FONT_OPTIONS = [
   { value: "var(--font-inter), system-ui, sans-serif", label: "Inter" },
   { value: "var(--font-dm), system-ui, sans-serif", label: "DM Sans" },
+  { value: "var(--font-space-grotesk), system-ui, sans-serif", label: "Space Grotesk" },
+  { value: "var(--font-playfair), Georgia, serif", label: "Playfair Display" },
+  { value: "var(--font-jetbrains-mono), ui-monospace, monospace", label: "JetBrains Mono" },
   { value: "Georgia, serif", label: "Georgia" },
   { value: "system-ui, sans-serif", label: "System UI" },
 ];

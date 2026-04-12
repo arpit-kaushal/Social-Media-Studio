@@ -29,7 +29,11 @@ export function PromptInput({
   loading,
 }: Props) {
   return (
-    <section className={styles.wrap} aria-label="Create from prompt">
+    <section
+      className={styles.wrap}
+      aria-label="Create from prompt"
+      aria-busy={loading}
+    >
       <label className={styles.label} htmlFor="idea">
         Your idea
       </label>
@@ -64,11 +68,11 @@ export function PromptInput({
         </div>
         <button
           type="button"
-          className={styles.generate}
+          className={`${styles.generate} ${loading ? styles.generateBusy : ""}`}
           onClick={onGenerate}
-          disabled={disabled || !value.trim()}
+          disabled={disabled || loading || !value.trim()}
         >
-          {loading ? "Generating…" : "Generate"}
+          {loading ? "Starting…" : "Generate"}
         </button>
       </div>
     </section>

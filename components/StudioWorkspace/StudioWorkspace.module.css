@@ -1,0 +1,162 @@
+.main {
+  width: 100%;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 2rem;
+  box-sizing: border-box;
+}
+
+@media (min-width: 960px) {
+  .mainViewport {
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+    padding: 0.45rem 1rem 0.55rem;
+    display: flex;
+    flex-direction: column;
+    max-width: none;
+  }
+}
+
+.topBar {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.65rem;
+  padding-bottom: 0.45rem;
+  margin-bottom: 0.45rem;
+  border-bottom: 1px solid rgb(255 255 255 / 9%);
+}
+
+.topBarBrand {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgb(165 180 252 / 92%);
+}
+
+.topBarSep {
+  color: rgb(255 255 255 / 22%);
+  font-weight: 300;
+  user-select: none;
+}
+
+.topBarHint {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: rgb(226 232 240 / 58%);
+}
+
+.studioShell {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.studioLayout {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+@media (min-width: 960px) {
+  .studioLayout {
+    grid-template-columns: minmax(260px, min(70vw, 700px)) minmax(0, 1fr);
+    gap: 0.65rem 1rem;
+  }
+
+  .studioLeft {
+    min-height: 0;
+    height: 100%;
+    max-width: 700px;
+    width: 100%;
+    justify-self: start;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 0.25rem;
+    scrollbar-gutter: stable;
+  }
+
+  .studioRight {
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 1.25rem 1rem 1.5rem;
+    box-sizing: border-box;
+  }
+}
+
+.generatingStage {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.apiLoaderWrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emptyFill {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0;
+}
+
+.exportDock {
+  position: fixed;
+  left: -14000px;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  width: max-content;
+  pointer-events: none;
+  z-index: -5;
+}
+
+.empty {
+  max-width: 420px;
+  margin: 0 auto;
+  text-align: center;
+  color: rgb(226 232 240 / 85%);
+}
+
+.emptyTitle {
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+  font-weight: 750;
+  color: #fff;
+}
+
+.emptyBody {
+  margin: 0 0 1.25rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: rgb(226 232 240 / 72%);
+}
+
+.emptyLink {
+  font-weight: 700;
+  color: rgb(165 243 252 / 95%);
+  text-decoration: none;
+}
+
+.emptyLink:hover {
+  text-decoration: underline;
+}

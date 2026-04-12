@@ -21,13 +21,21 @@ type Payload = {
     allConfiguredServicesOk: boolean;
   };
   services: ServiceRow[];
-  note: string;
+};
+
+type HfImageProbe = {
+  ok: boolean;
+  ms: number;
+  detail: string;
+  model?: string;
 };
 
 export default function StatusPage() {
   const [data, setData] = useState<Payload | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hfProbeLoading, setHfProbeLoading] = useState(false);
+  const [hfProbe, setHfProbe] = useState<HfImageProbe | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -55,16 +63,42 @@ export default function StatusPage() {
     };
   }, []);
 
+  async function runHfImageTest() {
+    setHfProbeLoading(true);
+    setHfProbe(null);
+    try {
+      const res = await fetch("/api/status/hf-image-test", {
+        method: "POST",
+        cache: "no-store",
+      });
+      if (res.status === 404) {
+        setHfProbe({
+          ok: false,
+          ms: 0,
+          detail: "Status diagnostics are disabled (STATUS_PAGE_ENABLED=false).",
+        });
+        return;
+      }
+      const j = (await res.json()) as HfImageProbe;
+      setHfProbe(j);
+    } catch {
+      setHfProbe({
+        ok: false,
+        ms: 0,
+        detail: "Request failed. Check the dev server console and network tab.",
+      });
+    } finally {
+      setHfProbeLoading(false);
+    }
+  }
+
   return (
     <main className={styles.main}>
       <header className={styles.header}>
         <h1 className={styles.title}>Service status</h1>
-        <p className={styles.lead}>
-          Live checks for AI copy, stock photo APIs, and Pollinations. Keys are read from{" "}
-          <code className={styles.code}>.env.local</code> in the project root.
-        </p>
+        <p className={styles.lead}>Internal diagnostics for this deployment.</p>
         <Link href="/" className={styles.back}>
-          ← Back to studio
+          ← Back to home
         </Link>
       </header>
 
@@ -94,7 +128,6 @@ export default function StatusPage() {
               </>
             )}
           </div>
-          <p className={styles.note}>{data.note}</p>
 
           <table className={styles.table}>
             <thead>
@@ -126,6 +159,36 @@ export default function StatusPage() {
               ))}
             </tbody>
           </table>
+
+          <section className={styles.hfProbe} aria-labelledby="hf-probe-title">
+            <h2 id="hf-probe-title" className={styles.hfProbeTitle}>
+              Hugging Face · live image test
+            </h2>
+            <p className={styles.hfProbeLead}>
+              The table row above only checks your token against the Hub. This button runs a real{" "}
+              <code className={styles.code}>text-to-image</code> call with your configured model (up
+              to ~90 seconds, queues on cold start).
+            </p>
+            <button
+              type="button"
+              className={styles.hfProbeBtn}
+              onClick={() => void runHfImageTest()}
+              disabled={hfProbeLoading}
+            >
+              {hfProbeLoading ? "Running image test…" : "Test image generation"}
+            </button>
+            {hfProbe && (
+              <div
+                className={`${styles.hfProbeResult} ${hfProbe.ok ? styles.hfProbeResultOk : styles.hfProbeResultFail}`}
+              >
+                <span className={styles.hfProbeStatus}>{hfProbe.ok ? "Success" : "Failed"}</span>
+                {hfProbe.ms > 0 ? ` · ${hfProbe.ms} ms` : ""}
+                {hfProbe.model ? ` · model ${hfProbe.model}` : ""}
+                <br />
+                {hfProbe.detail}
+              </div>
+            )}
+          </section>
 
           <p className={styles.hint}>
             JSON: <code className={styles.code}>/api/status</code> for scripts or monitoring.

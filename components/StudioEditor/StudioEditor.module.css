@@ -24,7 +24,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.65rem;
 }
 
 .heading {
@@ -210,6 +210,71 @@
 
 .brandBlock {
   margin: 0.25rem 0 1rem;
+}
+
+.copyImageHint {
+  margin: 0 0 1rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 14px;
+  border: 1px solid rgb(251 191 36 / 45%);
+  background: linear-gradient(
+    125deg,
+    rgb(251 191 36 / 16%) 0%,
+    rgb(244 114 182 / 12%) 100%
+  );
+}
+
+.copyImageHintTitle {
+  margin: 0 0 0.35rem;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: rgb(254 249 231 / 98%);
+}
+
+.copyImageHintBody {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: rgb(255 255 255 / 72%);
+}
+
+.emph {
+  font-weight: 800;
+  color: rgb(255 255 255 / 92%);
+}
+
+.inlineLink {
+  color: #a5f3fc;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.inlineLink:hover {
+  text-decoration: underline;
+}
+
+.imageSectionLabel {
+  margin: 0 0 0.35rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 45%);
+}
+
+.imageSectionHint {
+  margin: 0 0 0.75rem;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: rgb(255 255 255 / 48%);
+}
+
+.inlineCode {
+  font-size: 0.72rem;
+  padding: 0.1rem 0.3rem;
+  border-radius: 6px;
+  background: rgb(0 0 0 / 35%);
+  border: 1px solid rgb(255 255 255 / 12%);
 }
 
 .actions {

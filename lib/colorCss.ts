@@ -1,6 +1,4 @@
-/**
- * Build rgba() strings for gradients — avoids `color-mix()` which html2canvas cannot parse.
- */
+// Plain rgba() for gradients — html2canvas doesn’t handle color-mix().
 export function colorToRgba(input: string, alpha: number): string {
   const s = input.trim();
   const hex6 = /^#([0-9a-fA-F]{6})$/.exec(s);
@@ -32,4 +30,9 @@ export function colorToRgba(input: string, alpha: number): string {
 
 export function scrimGradient(primary: string, secondary: string): string {
   return `linear-gradient(165deg, ${colorToRgba(secondary, 0.88)} 0%, ${colorToRgba(secondary, 0.48)} 42%, ${colorToRgba(primary, 0.38)} 100%)`;
+}
+
+// Story: keep colour at the bottom so letterboxing stays mostly black.
+export function scrimGradientStory(primary: string, secondary: string): string {
+  return `linear-gradient(to top, ${colorToRgba(primary, 0.78)} 0%, ${colorToRgba(secondary, 0.45)} 30%, ${colorToRgba(secondary, 0.14)} 52%, transparent 72%)`;
 }

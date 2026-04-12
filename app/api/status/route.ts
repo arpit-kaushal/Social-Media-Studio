@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+import { GEMINI_COPY_MODELS } from "@/lib/aiGenerateCopy";
+import { readHuggingFaceToken } from "@/lib/hfEnv";
+import { checkHuggingFaceHubToken } from "@/lib/hfWhoami";
 import { isStatusPageDisabledInProduction, upstreamFailDetail } from "@/lib/statusCheckDetail";
 
 export const runtime = "nodejs";
@@ -18,6 +21,114 @@ async function timed<T>(fn: () => Promise<T>): Promise<{ ms: number; result: T }
   return { ms: Date.now() - t, result };
 }
 
+function looksLikeQuotaOrRateLimit(status: number, body: string): boolean {
+  if (status === 429) return true;
+  const b = body.toLowerCase();
+  return (
+    b.includes("resource_exhausted") ||
+    b.includes("too many requests") ||
+    (b.includes("quota") && (b.includes("exceed") || b.includes("exhausted") || b.includes("limit")))
+  );
+}
+
+async function geminiGenerateProbe(apiKey: string): Promise<{
+  ok: boolean;
+  detail: string;
+  ms: number;
+}> {
+  const t0 = Date.now();
+  let lastStatus = 0;
+  let lastSnippet = "";
+
+  for (const model of GEMINI_COPY_MODELS) {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: "Reply with exactly: OK" }] }],
+          generationConfig: { maxOutputTokens: 16, temperature: 0 },
+        }),
+      }
+    );
+    const raw = await res.text();
+    lastStatus = res.status;
+    lastSnippet = raw.slice(0, 280);
+    if (res.ok) {
+      return {
+        ok: true,
+        detail: `generateContent probe OK (${model}).`,
+        ms: Date.now() - t0,
+      };
+    }
+    if (looksLikeQuotaOrRateLimit(res.status, raw)) {
+      return {
+        ok: false,
+        detail: upstreamFailDetail(
+          res.status,
+          lastSnippet,
+          "Gemini copy quota or rate limit exceeded. Open Google AI Studio → usage / billing."
+        ),
+        ms: Date.now() - t0,
+      };
+    }
+  }
+
+  return {
+    ok: false,
+    detail: upstreamFailDetail(
+      lastStatus,
+      lastSnippet,
+      "Gemini generateContent failed for every model in the copy list (wrong key, retired model names, or regional block)."
+    ),
+    ms: Date.now() - t0,
+  };
+}
+
+async function groqChatProbe(apiKey: string): Promise<{
+  ok: boolean;
+  detail: string;
+  ms: number;
+}> {
+  const t0 = Date.now();
+  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "llama-3.1-8b-instant",
+      max_tokens: 8,
+      temperature: 0,
+      messages: [{ role: "user", content: "Say OK" }],
+    }),
+  });
+  const raw = await res.text();
+  const ms = Date.now() - t0;
+  const snippet = raw.slice(0, 280);
+  if (res.ok) {
+    return { ok: true, detail: "chat/completions probe OK (llama-3.1-8b-instant).", ms };
+  }
+  if (looksLikeQuotaOrRateLimit(res.status, raw)) {
+    return {
+      ok: false,
+      detail: upstreamFailDetail(
+        res.status,
+        snippet,
+        "Groq rate limit or quota exceeded. Check console.groq.com usage."
+      ),
+      ms,
+    };
+  }
+  return {
+    ok: false,
+    detail: upstreamFailDetail(res.status, snippet, "Verify GROQ_API_KEY and model access."),
+    ms,
+  };
+}
+
 export async function GET() {
   if (isStatusPageDisabledInProduction()) {
     return NextResponse.json({ error: "not found" }, { status: 404 });
@@ -35,25 +146,40 @@ export async function GET() {
       detail: "Set GEMINI_API_KEY in .env.local (project root).",
     });
   } else {
-    const { ms, result: res } = await timed(() =>
+    const { ms: listMs, result: res } = await timed(() =>
       fetch(
         `https://generativelanguage.googleapis.com/v1beta/models?pageSize=1&key=${encodeURIComponent(geminiKey)}`
       )
     );
     const text = await res.text();
+    let ok = res.ok;
+    let detail = res.ok
+      ? "API key accepted; models list OK."
+      : upstreamFailDetail(
+          res.status,
+          text.slice(0, 280),
+          "Verify GEMINI_API_KEY and Google AI Studio access."
+        );
+    let totalMs = listMs;
+
+    if (res.ok) {
+      const { ms: probeMs, result: probe } = await timed(() => geminiGenerateProbe(geminiKey));
+      totalMs += probeMs;
+      if (!probe.ok) {
+        ok = false;
+        detail = `${detail} ${probe.detail}`;
+      } else {
+        detail = `${detail} ${probe.detail}`;
+      }
+    }
+
     services.push({
       id: "gemini",
       name: "Google Gemini (copy)",
       configured: true,
-      ok: res.ok,
-      ms,
-      detail: res.ok
-        ? "API key accepted; models list OK."
-        : upstreamFailDetail(
-            res.status,
-            text.slice(0, 280),
-            "Verify GEMINI_API_KEY and Google AI Studio access."
-          ),
+      ok,
+      ms: totalMs,
+      detail,
     });
   }
 
@@ -67,21 +193,36 @@ export async function GET() {
       detail: "Set GROQ_API_KEY in .env.local (optional).",
     });
   } else {
-    const { ms, result: res } = await timed(() =>
+    const { ms: listMs, result: res } = await timed(() =>
       fetch("https://api.groq.com/openai/v1/models", {
         headers: { Authorization: `Bearer ${groqKey}` },
       })
     );
     const text = await res.text();
+    let ok = res.ok;
+    let detail = res.ok
+      ? "API key accepted; models list OK."
+      : upstreamFailDetail(res.status, text.slice(0, 280), "Verify GROQ_API_KEY.");
+    let totalMs = listMs;
+
+    if (res.ok) {
+      const { ms: probeMs, result: probe } = await timed(() => groqChatProbe(groqKey));
+      totalMs += probeMs;
+      if (!probe.ok) {
+        ok = false;
+        detail = `${detail} ${probe.detail}`;
+      } else {
+        detail = `${detail} ${probe.detail}`;
+      }
+    }
+
     services.push({
       id: "groq",
       name: "Groq (copy fallback)",
       configured: true,
-      ok: res.ok,
-      ms,
-      detail: res.ok
-        ? "API key accepted; models list OK."
-        : upstreamFailDetail(res.status, text.slice(0, 280), "Verify GROQ_API_KEY."),
+      ok,
+      ms: totalMs,
+      detail,
     });
   }
 
@@ -155,6 +296,30 @@ export async function GET() {
     });
   }
 
+  const hfToken = readHuggingFaceToken();
+  if (!hfToken) {
+    services.push({
+      id: "huggingface",
+      name: "Hugging Face (Hub + image)",
+      configured: false,
+      ok: null,
+      detail:
+        "Set HUGGINGFACE_API_TOKEN to a User access token with Read scope from https://huggingface.co/settings/tokens (HF_TOKEN / HUGGINGFACE_TOKEN also work). No quotes in .env.local. Then run the live image test below.",
+    });
+  } else {
+    const { ms: hfMs, result: hfCheck } = await timed(() => checkHuggingFaceHubToken(hfToken));
+    services.push({
+      id: "huggingface",
+      name: "Hugging Face (Hub + image)",
+      configured: true,
+      ok: hfCheck.ok,
+      ms: hfMs,
+      detail: hfCheck.ok
+        ? `${hfCheck.detail} For a real text-to-image check, use the button below (may take up to ~90s).`
+        : hfCheck.detail,
+    });
+  }
+
   const { ms: pollMs, result: pollRes } = await timed(async () => {
     const c = new AbortController();
     const kill = setTimeout(() => c.abort(), 12_000);
@@ -189,6 +354,5 @@ export async function GET() {
       allConfiguredServicesOk: configuredRows.length > 0 && testedOk.length === configuredRows.length,
     },
     services,
-    note: "Never commit API keys. This endpoint does not echo secrets.",
   });
 }

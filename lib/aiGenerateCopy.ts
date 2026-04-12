@@ -2,7 +2,10 @@ import { parseSlidesJson, type SlidePayload } from "./aiJson";
 import { buildHeuristicSlidePayloads, slideCountForFormat, titleForSlideIndex } from "./slideCopy";
 import type { StudioFormat } from "./types";
 
-const GEMINI_MODELS = [
+// Fastest first; status checks use the same list.
+export const GEMINI_COPY_MODELS = [
+  "gemini-2.5-flash",
+  "gemini-2.5-flash-lite",
   "gemini-2.0-flash",
   "gemini-2.0-flash-lite",
   "gemini-1.5-flash",
@@ -56,44 +59,48 @@ async function geminiRawText(prompt: string, format: StudioFormat): Promise<stri
   const key = process.env.GEMINI_API_KEY?.trim();
   if (!key) return null;
 
-  const body = {
-    contents: [{ role: "user", parts: [{ text: buildStudioPrompt(prompt, format) }] }],
-    generationConfig: {
-      temperature: 0.75,
-      maxOutputTokens: 8192,
-      responseMimeType: "application/json",
-    },
-  };
+  const userText = buildStudioPrompt(prompt, format);
 
-  for (const model of GEMINI_MODELS) {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      }
-    );
-
-    const raw = await res.text();
-    if (!res.ok) {
-      console.error(`[Gemini ${model}]`, res.status, raw.slice(0, 500));
-      continue;
-    }
-
-    try {
-      const data = JSON.parse(raw) as {
-        candidates?: { content?: { parts?: { text?: string }[] } }[];
-        error?: { message?: string };
+  for (const jsonMode of [true, false] as const) {
+    for (const model of GEMINI_COPY_MODELS) {
+      const generationConfig: Record<string, unknown> = {
+        temperature: 0.75,
+        maxOutputTokens: 8192,
       };
-      if (data.error?.message) {
-        console.error(`[Gemini ${model}]`, data.error.message);
+      if (jsonMode) generationConfig.responseMimeType = "application/json";
+
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ role: "user", parts: [{ text: userText }] }],
+            generationConfig,
+          }),
+        }
+      );
+
+      const raw = await res.text();
+      if (!res.ok) {
+        console.error(`[Gemini ${model} json=${jsonMode}]`, res.status, raw.slice(0, 500));
         continue;
       }
-      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
-      if (text.trim()) return text;
-    } catch {
-      console.error(`[Gemini ${model}] invalid JSON`, raw.slice(0, 300));
+
+      try {
+        const data = JSON.parse(raw) as {
+          candidates?: { content?: { parts?: { text?: string }[] } }[];
+          error?: { message?: string };
+        };
+        if (data.error?.message) {
+          console.error(`[Gemini ${model}]`, data.error.message);
+          continue;
+        }
+        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+        if (text.trim()) return text;
+      } catch {
+        console.error(`[Gemini ${model}] invalid JSON`, raw.slice(0, 300));
+      }
     }
   }
   return null;
@@ -145,14 +152,26 @@ async function groqRawText(prompt: string, format: StudioFormat): Promise<string
   return null;
 }
 
+export type SlideCopySource = "gemini" | "groq" | "heuristic";
+
+export type SlideCopyResult = {
+  slides: SlidePayload[];
+  copySource: SlideCopySource;
+};
+
 export async function generateSlideCopyOrHeuristic(
   prompt: string,
   format: StudioFormat
-): Promise<SlidePayload[]> {
+): Promise<SlideCopyResult> {
   const n = slideCountForFormat(format);
 
+  let copySource: SlideCopySource = "heuristic";
   let text = await geminiRawText(prompt, format);
-  if (!text) text = await groqRawText(prompt, format);
+  if (text) copySource = "gemini";
+  else {
+    text = await groqRawText(prompt, format);
+    if (text) copySource = "groq";
+  }
 
   let partial = text ? parseSlidesJson(text) : null;
   if ((!partial || partial.length === 0) && text) {
@@ -166,7 +185,8 @@ export async function generateSlideCopyOrHeuristic(
     }
   }
 
-  return finalizePayloads(partial, n, prompt, format);
+  const slides = finalizePayloads(partial, n, prompt, format);
+  return { slides, copySource };
 }
 
 function tryRecoverSlidesArray(text: string): SlidePayload[] | null {
@@ -205,7 +225,7 @@ This is slide ${index + 1} of ${total}.
 Return ONLY JSON: {"title":"short label","body":"main copy max 260 chars"}`;
 
   if (key) {
-    for (const model of GEMINI_MODELS) {
+    for (const model of GEMINI_COPY_MODELS) {
       const res = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
         {

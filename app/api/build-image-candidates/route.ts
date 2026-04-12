@@ -4,6 +4,7 @@ import { buildFullImageCandidates } from "@/lib/buildImageCandidates";
 import type { StudioFormat } from "@/lib/types";
 
 export const runtime = "nodejs";
+export const maxDuration = 130;
 
 export async function POST(req: Request) {
   try {
@@ -12,6 +13,10 @@ export async function POST(req: Request) {
       format?: StudioFormat;
       seed?: number;
       topic?: string;
+      title?: string;
+      slideBody?: string;
+      slideIndex?: number;
+      tryHuggingFace?: boolean;
     };
     const visualPrompt = typeof body.visualPrompt === "string" ? body.visualPrompt : "";
     const format = body.format ?? "carousel";
@@ -31,7 +36,24 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "topic too long" }, { status: 400 });
     }
 
-    const candidates = await buildFullImageCandidates(visualPrompt, format, seed, topic);
+    const title = typeof body.title === "string" ? body.title : "";
+    const slideBody = typeof body.slideBody === "string" ? body.slideBody : "";
+    const slideIndex =
+      typeof body.slideIndex === "number" && Number.isFinite(body.slideIndex)
+        ? Math.max(0, Math.floor(body.slideIndex))
+        : 0;
+    const tryHuggingFace = body.tryHuggingFace === true;
+
+    const candidates =
+      title.trim() && slideBody.trim()
+        ? await buildFullImageCandidates(visualPrompt, format, seed, topic, {
+            title,
+            body: slideBody,
+            slideIndex,
+            tryHuggingFace,
+          })
+        : await buildFullImageCandidates(visualPrompt, format, seed, topic);
+
     return NextResponse.json({ candidates });
   } catch (e) {
     console.error(e);

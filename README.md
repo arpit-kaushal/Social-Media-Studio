@@ -96,7 +96,7 @@ Open [http://localhost:3000](http://localhost:3000). Optional: [http://localhost
 
 ### Environment
 
-Copy `.env.example` to **`.env.local` in the project root** (Next.js only loads env files from the root). Set optional keys for AI copy (Gemini / Groq) and stock photos (Pexels / Unsplash).
+Copy `.env.example` to **`.env.local` in the project root** (Next.js only loads env files from the root). Set optional keys for AI copy (Gemini / Groq), stock photos (Pexels / Unsplash), **Hugging Face** (`HUGGINGFACE_API_TOKEN`) for Stable Diffusion backgrounds, and **MongoDB** (`DB_USERNAME`, `DB_PASSWORD`, `DB_CLUSTER`, `DB_NAME` — use your Atlas host, e.g. `cluster0.xxxxx.mongodb.net` — or `MONGODB_URI`) so sessions survive refresh.
 
 ### Production build
 

@@ -78,9 +78,15 @@ export async function getExtraStockUrls(
   seed: number
 ): Promise<string[]> {
   const out: string[] = [];
-  const p = await fetchPexelsPhotoUrl(topic, width, height, seed);
-  if (p) out.push(p);
-  const u = await fetchUnsplashPhotoUrl(topic, width, height, seed + 17);
-  if (u) out.push(u);
+  const u1 = await fetchUnsplashPhotoUrl(topic, width, height, seed + 17);
+  if (u1) out.push(u1);
+  const u2 = await fetchUnsplashPhotoUrl(topic, width, height, seed + 9_131);
+  if (u2 && u2 !== u1) out.push(u2);
+
+  const p1 = await fetchPexelsPhotoUrl(topic, width, height, seed);
+  if (p1) out.push(p1);
+  const p2 = await fetchPexelsPhotoUrl(topic, width, height, seed + 5_027);
+  if (p2 && p2 !== p1) out.push(p2);
+
   return out;
 }

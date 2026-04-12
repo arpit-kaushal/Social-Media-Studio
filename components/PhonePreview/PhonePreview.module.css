@@ -1,0 +1,386 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.caption {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 50%);
+}
+
+/* iPhone-style chassis */
+.iphone {
+  position: relative;
+  width: min(360px, 92vw);
+  padding: 5px;
+  border-radius: 46px;
+  background: linear-gradient(
+    160deg,
+    rgb(58 58 62) 0%,
+    rgb(28 28 32) 22%,
+    rgb(18 18 22) 55%,
+    rgb(42 42 48) 100%
+  );
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 10%),
+    0 40px 100px rgb(0 0 0 / 55%),
+    inset 0 1px 0 rgb(255 255 255 / 12%);
+}
+
+.antenna {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 42%;
+  height: 5px;
+  border-radius: 0 0 6px 6px;
+  background: rgb(0 0 0 / 55%);
+  z-index: 3;
+}
+
+.sideBtnL {
+  position: absolute;
+  left: -3px;
+  top: 96px;
+  width: 4px;
+  height: 72px;
+  border-radius: 3px 0 0 3px;
+  background: linear-gradient(90deg, rgb(50 50 54), rgb(30 30 34));
+}
+
+.sideBtnR1 {
+  position: absolute;
+  right: -3px;
+  top: 120px;
+  width: 4px;
+  height: 52px;
+  border-radius: 0 3px 3px 0;
+  background: linear-gradient(270deg, rgb(50 50 54), rgb(30 30 34));
+}
+
+.sideBtnR2 {
+  position: absolute;
+  right: -3px;
+  top: 182px;
+  width: 4px;
+  height: 52px;
+  border-radius: 0 3px 3px 0;
+  background: linear-gradient(270deg, rgb(50 50 54), rgb(30 30 34));
+}
+
+.iphoneInner {
+  border-radius: 42px;
+  overflow: hidden;
+  background: #000;
+}
+
+.statusRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.time {
+  min-width: 3rem;
+}
+
+.dynamicIsland {
+  width: 108px;
+  height: 30px;
+  border-radius: 20px;
+  background: #0a0a0a;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 8%);
+}
+
+.statusIcons {
+  min-width: 3rem;
+  text-align: right;
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  opacity: 0.85;
+}
+
+.igShell {
+  background: #000;
+  min-height: 520px;
+  max-height: min(72vh, 680px);
+  display: flex;
+  flex-direction: column;
+}
+
+.igAppHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 14px 10px;
+  border-bottom: 1px solid rgb(255 255 255 / 8%);
+}
+
+.igLogo {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.15rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: #fafafa;
+}
+
+.igHeaderActions {
+  font-size: 0.85rem;
+  letter-spacing: 0.25em;
+  color: rgb(255 255 255 / 85%);
+}
+
+.igPost {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.igPostHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+}
+
+.igAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f97316, #db2777, #7c3aed);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #fff;
+}
+
+.igUser {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.igHandle {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fafafa;
+}
+
+.igSponsored {
+  font-size: 0.65rem;
+  color: rgb(255 255 255 / 45%);
+}
+
+.igMore {
+  color: rgb(255 255 255 / 75%);
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.igCarousel {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  border-top: 1px solid rgb(255 255 255 / 6%);
+  border-bottom: 1px solid rgb(255 255 255 / 6%);
+}
+
+.igPage {
+  flex: 0 0 100%;
+  width: 100%;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  display: flex;
+  justify-content: center;
+  padding: 10px 0 12px;
+  box-sizing: border-box;
+}
+
+.igToolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 8px 14px 4px;
+  font-size: 1.05rem;
+  color: rgb(250 250 250 / 92%);
+}
+
+.igToolbarSpacer {
+  flex: 1;
+}
+
+.igDots {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  padding: 2px 0 8px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 22%);
+}
+
+.dotOn {
+  background: rgb(96 165 250 / 95%);
+  transform: scale(1.15);
+}
+
+.igMeta {
+  padding: 0 14px 16px;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: rgb(250 250 250 / 88%);
+}
+
+.igLikes {
+  margin: 0 0 6px;
+}
+
+.igCaption {
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.homeBar {
+  margin: 8px auto 12px;
+  width: 112px;
+  height: 5px;
+  border-radius: 5px;
+  background: rgb(255 255 255 / 28%);
+}
+
+/* Single 1:1 post — no horizontal carousel */
+.postMediaSquare {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0 12px;
+  border-top: 1px solid rgb(255 255 255 / 6%);
+  border-bottom: 1px solid rgb(255 255 255 / 6%);
+}
+
+/* Story viewer */
+.storyShell {
+  background: #000;
+  min-height: 480px;
+  max-height: min(78vh, 720px);
+  display: flex;
+  flex-direction: column;
+}
+
+.storyTopBar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px 6px;
+}
+
+.storyRing {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  padding: 2px;
+  background: linear-gradient(135deg, #f97316, #db2777, #a855f7);
+  flex-shrink: 0;
+}
+
+.storyRingInner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #111;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #fff;
+}
+
+.storyUserBlock {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.storyHandle {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fafafa;
+}
+
+.storyTime {
+  font-size: 0.65rem;
+  color: rgb(255 255 255 / 45%);
+}
+
+.storyClose {
+  font-size: 1rem;
+  color: rgb(255 255 255 / 75%);
+  padding: 4px;
+}
+
+.storyProgressRow {
+  display: flex;
+  gap: 4px;
+  padding: 0 10px 8px;
+}
+
+.storySeg {
+  flex: 1;
+  height: 2px;
+  border-radius: 2px;
+  background: rgb(255 255 255 / 22%);
+}
+
+.storySegOn {
+  background: rgb(250 250 250 / 92%);
+}
+
+.storyCarousel {
+  flex: 1;
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  align-items: center;
+}
+
+.storyPage {
+  flex: 0 0 100%;
+  width: 100%;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  display: flex;
+  justify-content: center;
+  padding: 0 0 20px;
+  box-sizing: border-box;
+}

@@ -1,0 +1,241 @@
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.panel {
+  background: rgb(255 255 255 / 6%);
+  border: 1px solid rgb(255 255 255 / 10%);
+  border-radius: 20px;
+  padding: 1.25rem 1.35rem;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 24px 80px rgb(0 0 0 / 35%);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.heading {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.ghost {
+  padding: 0.45rem 0.85rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: rgb(255 255 255 / 85%);
+  background: rgb(255 255 255 / 8%);
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 999px;
+}
+
+.ghost:hover:not(:disabled) {
+  background: rgb(255 255 255 / 12%);
+}
+
+.ghost:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.dirtyBanner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  padding: 0.65rem 0.85rem;
+  margin-bottom: 1rem;
+  border-radius: 14px;
+  background: linear-gradient(
+    120deg,
+    rgb(251 191 36 / 18%) 0%,
+    rgb(244 114 182 / 14%) 100%
+  );
+  border: 1px solid rgb(255 255 255 / 16%);
+}
+
+.dirtyText {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: rgb(254 249 231 / 95%);
+}
+
+.dirtyBtn {
+  padding: 0.4rem 0.85rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 999px;
+  background: #fff;
+  color: #1e1b4b;
+  cursor: pointer;
+}
+
+.dirtyBtn:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.dirtyBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+}
+
+.chip {
+  max-width: 100%;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 999px;
+  border: 1px solid rgb(255 255 255 / 12%);
+  background: rgb(0 0 0 / 22%);
+  color: rgb(255 255 255 / 75%);
+  cursor: pointer;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chipOn {
+  border-color: rgb(165 180 252 / 55%);
+  background: rgb(99 102 241 / 28%);
+  color: #fff;
+}
+
+.slideTools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.toolBtn {
+  flex: 1;
+  min-width: 120px;
+  padding: 0.45rem 0.65rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  border-radius: 10px;
+  border: 1px solid rgb(129 140 248 / 45%);
+  background: rgb(99 102 241 / 22%);
+  color: #e0e7ff;
+}
+
+.toolBtn:hover:not(:disabled) {
+  background: rgb(99 102 241 / 32%);
+}
+
+.toolBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.toolBtnDanger {
+  flex: 1;
+  min-width: 120px;
+  padding: 0.45rem 0.65rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  border-radius: 10px;
+  border: 1px solid rgb(248 113 113 / 45%);
+  background: rgb(239 68 68 / 15%);
+  color: #fecaca;
+}
+
+.toolBtnDanger:hover:not(:disabled) {
+  background: rgb(239 68 68 / 25%);
+}
+
+.toolBtnDanger:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.fieldLabel {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 45%);
+  margin-bottom: 0.35rem;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  margin-bottom: 0.85rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid rgb(255 255 255 / 12%);
+  background: rgb(0 0 0 / 35%);
+  color: #fff;
+}
+
+.input:focus,
+.textarea:focus {
+  outline: 2px solid rgb(129 140 248 / 55%);
+  outline-offset: 1px;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.brandBlock {
+  margin: 0.25rem 0 1rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.secondary {
+  flex: 1;
+  min-width: 140px;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: 12px;
+  border: 1px solid rgb(255 255 255 / 16%);
+  background: rgb(255 255 255 / 8%);
+  color: #fff;
+}
+
+.secondary:hover:not(:disabled) {
+  background: rgb(255 255 255 / 12%);
+}
+
+.secondary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

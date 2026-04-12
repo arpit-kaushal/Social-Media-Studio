@@ -1,0 +1,41 @@
+:root {
+  --surface: #070712;
+  --text: #f8fafc;
+  --text-muted: #94a3b8;
+  --border: rgb(255 255 255 / 10%);
+  --radius: 14px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  background: radial-gradient(1200px 600px at 10% -10%, rgb(99 102 241 / 35%), transparent 55%),
+    radial-gradient(900px 500px at 90% 10%, rgb(244 114 182 / 22%), transparent 50%),
+    radial-gradient(800px 480px at 50% 100%, rgb(34 211 238 / 12%), transparent 55%),
+    #070712;
+  background-attachment: fixed;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}

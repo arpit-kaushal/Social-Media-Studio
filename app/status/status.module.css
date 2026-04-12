@@ -1,0 +1,145 @@
+.main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+}
+
+.header {
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.lead {
+  margin: 0 0 1rem;
+  color: rgb(226 232 240 / 85%);
+  line-height: 1.55;
+  max-width: 42rem;
+}
+
+.code {
+  font-size: 0.85em;
+  padding: 0.12rem 0.35rem;
+  border-radius: 6px;
+  background: rgb(0 0 0 / 35%);
+  color: #e2e8f0;
+}
+
+.back {
+  display: inline-block;
+  font-weight: 600;
+  color: #a5f3fc;
+  text-decoration: none;
+}
+
+.back:hover {
+  text-decoration: underline;
+}
+
+.muted {
+  color: rgb(148 163 184 / 95%);
+}
+
+.error {
+  color: #fecaca;
+}
+
+.bannerOk,
+.bannerWarn {
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.bannerOk {
+  background: rgb(34 197 94 / 18%);
+  border: 1px solid rgb(74 222 128 / 35%);
+  color: #bbf7d0;
+}
+
+.bannerWarn {
+  background: rgb(251 191 36 / 14%);
+  border: 1px solid rgb(251 191 36 / 35%);
+  color: #fef3c7;
+}
+
+.note {
+  font-size: 0.8rem;
+  color: rgb(148 163 184 / 95%);
+  margin: 0 0 1.25rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  background: rgb(255 255 255 / 4%);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 10%);
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid rgb(255 255 255 / 8%);
+  vertical-align: top;
+}
+
+.table th {
+  background: rgb(0 0 0 / 25%);
+  color: rgb(226 232 240 / 75%);
+  font-weight: 700;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.name {
+  font-weight: 600;
+  color: #f8fafc;
+  white-space: nowrap;
+}
+
+.ok {
+  color: #86efac;
+  font-weight: 700;
+}
+
+.fail {
+  color: #fca5a5;
+  font-weight: 700;
+}
+
+.skip {
+  color: rgb(148 163 184);
+}
+
+.ms {
+  color: rgb(148 163 184);
+  white-space: nowrap;
+}
+
+.detail {
+  color: rgb(203 213 225 / 95%);
+  line-height: 1.45;
+  max-width: 28rem;
+}
+
+.hint {
+  margin-top: 1.25rem;
+  font-size: 0.8rem;
+  color: rgb(148 163 184);
+}

@@ -140,7 +140,7 @@ export async function GET() {
   if (!geminiKey) {
     services.push({
       id: "gemini",
-      name: "Google Gemini (copy)",
+      name: "Google Gemini (texts)",
       configured: false,
       ok: null,
       detail: "Set GEMINI_API_KEY in .env.local (project root).",
@@ -187,7 +187,7 @@ export async function GET() {
   if (!groqKey) {
     services.push({
       id: "groq",
-      name: "Groq (copy fallback)",
+      name: "Groq (texts fallback)",
       configured: false,
       ok: null,
       detail: "Set GROQ_API_KEY in .env.local (optional).",
@@ -218,7 +218,7 @@ export async function GET() {
 
     services.push({
       id: "groq",
-      name: "Groq (copy fallback)",
+      name: "Groq (texts fallback)",
       configured: true,
       ok,
       ms: totalMs,

@@ -28,7 +28,10 @@ export default function Home() {
 
       if (!res.ok) {
         const j = (await res.json().catch(() => ({}))) as { error?: string };
-        alert(j.error ?? "Could not start a new deck. Check that MongoDB is configured.");
+        alert(
+          j.error ??
+            "Could not start a new deck. Check that MongoDB is configured.",
+        );
         startingRef.current = false;
         setStarting(false);
         return;
@@ -56,9 +59,12 @@ export default function Home() {
     <main className={styles.main}>
       <header className={styles.hero}>
         <p className={styles.kicker}>Social Media Studio</p>
-        <h1 className={styles.title}>Carousels that feel designed, not templated.</h1>
+        <h1 className={styles.title}>
+          Carousels that feel designed, not templated.
+        </h1>
         <p className={styles.sub}>
-          Describe your idea, pick a format, and tweak copy and visuals in the editor.
+          Describe your idea, pick a format, and tweak texts and visuals in the
+          editor.
         </p>
       </header>
 

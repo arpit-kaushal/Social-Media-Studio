@@ -175,7 +175,7 @@ export async function GET() {
 
     services.push({
       id: "gemini",
-      name: "Google Gemini (copy)",
+      name: "Google Gemini (texts)",
       configured: true,
       ok,
       ms: totalMs,
